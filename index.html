@@ -1,0 +1,236 @@
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de eBook de Recetas con Estilo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f7f3e9;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .container {
+        background-color: #ffffff;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        width: 100%;
+    }
+    h1 {
+        color: #4a4a4a;
+        text-align: center;
+        font-size: 2.5em;
+        margin-bottom: 30px;
+    }
+    .recipe-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    label {
+        font-weight: bold;
+        color: #666;
+    }
+    input[type="text"], textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1em;
+    }
+    textarea {
+        height: 100px;
+        resize: vertical;
+    }
+    button {
+        background-color: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.2em;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    button:hover {
+        background-color: #e74c3c;
+    }
+    #recipeList {
+        margin-top: 30px;
+    }
+    .recipe-item {
+        background-color: #f9f9f9;
+        border: 1px solid #eee;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    .recipe-item h3 {
+        margin-top: 0;
+        color: #4a4a4a;
+    }
+    #coverImage {
+        display: none;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🍳 Generador de eBook de Recetas 📚</h1>
+    <form id="recipeForm" class="recipe-form">
+        <div>
+            <label for="recipeName">Nombre de la Receta:</label>
+            <input type="text" id="recipeName" required>
+        </div>
+        <div>
+            <label for="ingredients">Ingredientes:</label>
+            <textarea id="ingredients" required></textarea>
+        </div>
+        <div>
+            <label for="instructions">Instrucciones:</label>
+            <textarea id="instructions" required></textarea>
+        </div>
+        <button type="submit">Agregar Receta</button>
+    </form>
+    <div id="recipeList"></div>
+    <button id="generateEbook" style="margin-top: 20px;">Generar eBook PDF</button>
+</div>
+
+<!-- Imagen de portada oculta -->
+<img id="coverImage" src="https://images.unsplash.com/photo-1495195129352-aeb325a55b65?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1776&q=80" alt="Portada del libro de recetas">
+
+<script>
+    const { jsPDF } = window.jspdf;
+    let recipes = [];
+
+    document.getElementById('recipeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('recipeName').value;
+        const ingredients = document.getElementById('ingredients').value;
+        const instructions = document.getElementById('instructions').value;
+        
+        recipes.push({ name, ingredients, instructions });
+        updateRecipeList();
+        this.reset();
+    });
+
+    function updateRecipeList() {
+        const list = document.getElementById('recipeList');
+        list.innerHTML = '';
+        recipes.forEach((recipe, index) => {
+            const item = document.createElement('div');
+            item.classList.add('recipe-item');
+            item.innerHTML = `
+                <h3>${recipe.name}</h3>
+                <p><strong>Ingredientes:</strong> ${recipe.ingredients}</p>
+                <p><strong>Instrucciones:</strong> ${recipe.instructions}</p>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    document.getElementById('generateEbook').addEventListener('click', async function() {
+        const doc = new jsPDF();
+        let yOffset = 20;
+
+        // Agregar portada
+        const coverImage = document.getElementById('coverImage');
+        const coverCanvas = await html2canvas(coverImage);
+        const coverImgData = coverCanvas.toDataURL('image/jpeg');
+        doc.addImage(coverImgData, 'JPEG', 0, 0, 210, 297);
+
+        // Agregar página de título
+        doc.addPage();
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(30);
+        doc.setTextColor(66, 66, 66);
+        doc.text("Mi Libro de Recetas", 105, 140, null, null, "center");
+
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(16);
+        doc.setTextColor(100, 100, 100);
+        doc.text("Creado con amor y sabor", 105, 160, null, null, "center");
+
+        // Agregar índice
+        doc.addPage();
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(24);
+        doc.setTextColor(66, 66, 66);
+        doc.text("Índice", 105, 30, null, null, "center");
+
+        yOffset = 50;
+        recipes.forEach((recipe, index) => {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`${index + 1}. ${recipe.name}`, 20, yOffset);
+            yOffset += 10;
+
+            if (yOffset > 280) {
+                doc.addPage();
+                yOffset = 20;
+            }
+        });
+
+        // Agregar recetas
+        recipes.forEach((recipe, index) => {
+            doc.addPage();
+            yOffset = 20;
+
+            // Dibujar un borde decorativo
+            doc.setDrawColor(255, 107, 107);
+            doc.setLineWidth(2);
+            doc.rect(10, 10, 190, 277);
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(24);
+            doc.setTextColor(66, 66, 66);
+            doc.text(recipe.name, 105, yOffset, null, null, "center");
+            yOffset += 20;
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(16);
+            doc.setTextColor(100, 100, 100);
+            doc.text("Ingredientes:", 105, yOffset, null, null, "center");
+            yOffset += 10;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            const ingredientLines = doc.splitTextToSize(recipe.ingredients, 160);
+            doc.text(ingredientLines, 105, yOffset, null, null, "center");
+            yOffset += ingredientLines.length * 7 + 10;
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(16);
+            doc.setTextColor(100, 100, 100);
+            doc.text("Instrucciones:", 105, yOffset, null, null, "center");
+            yOffset += 10;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            const instructionLines = doc.splitTextToSize(recipe.instructions, 160);
+            doc.text(instructionLines, 105, yOffset, null, null, "center");
+
+            // Agregar un ícono decorativo
+            doc.addSvgAsImage(`
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 15C15.3137 15 18 12.3137 18 9C18 5.68629 15.3137 3 12 3C8.68629 3 6 5.68629 6 9C6 12.3137 8.68629 15 12 15Z" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 15V21" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 18H15" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            `, 160, 260, 50, 50);
+        });
+
+        doc.save("mi_libro_de_recetas_con_estilo.pdf");
+    });
+</script>
+</body></html>
