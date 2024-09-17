@@ -169,84 +169,94 @@
     }
 
     document.getElementById('generateEbook').addEventListener('click', function() {
-        const doc = new jsPDF();
-        let pageNumber = 1;
+    const doc = new jsPDF();
+    let pageNumber = 1;
 
-        function addPageNumber() {
-            doc.setFontSize(10);
-            doc.text('Página ' + pageNumber, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, { align: 'center' });
-            pageNumber++;
-        }
+    function addPageNumber() {
+        doc.setFontSize(10);
+        doc.text('Página ' + pageNumber, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, { align: 'center' });
+        pageNumber++;
+    }
 
-        function addHeader(text) {
-            doc.setFontSize(12);
-            doc.setTextColor(100, 100, 100);
-            doc.text(text, doc.internal.pageSize.width / 2, 10, { align: 'center' });
-        }
+    function addHeader(text) {
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text(text, doc.internal.pageSize.width / 2, 10, { align: 'center' });
+    }
 
-        // Portada
-        doc.setFillColor(255, 107, 107);
-        doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(40);
-        doc.text("Mi Libro de Recetas", doc.internal.pageSize.width / 2, 100, { align: 'center' });
-        doc.setFontSize(20);
-        doc.text("Creado con amor", doc.internal.pageSize.width / 2, 120, { align: 'center' });
-        doc.text(new Date().toLocaleDateString(), doc.internal.pageSize.width / 2, 140, { align: 'center' });
+    // Portada mejorada
+    doc.setFillColor(50, 50, 150);  // Color azul oscuro profesional
+    doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
+    doc.setTextColor(255, 255, 255);  // Texto blanco
+    doc.setFontSize(50);  // Título más grande
+    doc.text("Libro de Recetas", doc.internal.pageSize.width / 2, 100, { align: 'center' });
+    doc.setFontSize(25);  // Subtítulo más claro
+    doc.text("Hecho con amor y cuidado", doc.internal.pageSize.width / 2, 130, { align: 'center' });
+    doc.text(new Date().toLocaleDateString(), doc.internal.pageSize.width / 2, 160, { align: 'center' });
 
-        // Índice
-        doc.addPage();
-        addHeader('Mi Libro de Recetas');
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(20);
-        doc.text("Índice", doc.internal.pageSize.width / 2, 30, { align: 'center' });
-        let yOffset = 50;
-        recipes.forEach((recipe, index) => {
-            doc.setFontSize(12);
-            doc.text(`${index + 1}. ${recipe.name}`, 20, yOffset);
-            yOffset += 10;
-            if (yOffset > 280) {
-                doc.addPage();
-                addHeader('Mi Libro de Recetas');
-                addPageNumber();
-                yOffset = 30;
-            }
-        });
-        addPageNumber();
-
-        // Recetas
-        recipes.forEach((recipe, index) => {
+    // Índice
+    doc.addPage();
+    addHeader('Índice - Libro de Recetas');
+    doc.setTextColor(0, 0, 0);  // Negro para el índice
+    doc.setFontSize(24);  // Fuente grande para el título del índice
+    doc.text("Índice", doc.internal.pageSize.width / 2, 30, { align: 'center' });
+    let yOffset = 50;
+    recipes.forEach((recipe, index) => {
+        doc.setFontSize(14);  // Fuente más grande para el listado de recetas
+        doc.text(`${index + 1}. ${recipe.name}`, 20, yOffset);
+        yOffset += 10;
+        if (yOffset > 280) {
             doc.addPage();
-            addHeader('Mi Libro de Recetas');
-            let yOffset = 30;
-
-            doc.setFontSize(24);
-            doc.setTextColor(255, 107, 107);
-            doc.text(recipe.name, doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
-            yOffset += 20;
-
-            doc.setFontSize(16);
-            doc.setTextColor(0, 0, 0);
-            doc.text("Ingredientes:", doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
-            yOffset += 10;
-
-            doc.setFontSize(12);
-            const ingredientLines = doc.splitTextToSize(recipe.ingredients, 170);
-            doc.text(ingredientLines, doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
-            yOffset += ingredientLines.length * 7 + 10;
-
-            doc.setFontSize(16);
-            doc.text("Instrucciones:", doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
-            yOffset += 10;
-
-            doc.setFontSize(12);
-            const instructionLines = doc.splitTextToSize(recipe.instructions, 170);
-            doc.text(instructionLines, doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
-
+            addHeader('Índice - Libro de Recetas');
             addPageNumber();
-        });
-
-        doc.save("mi_libro_de_recetas.pdf");
+            yOffset = 30;
+        }
     });
+    addPageNumber();
+
+// Recetas
+recipes.forEach((recipe, index) => {
+    doc.addPage();
+    addHeader('Libro de Recetas');
+    let yOffset = 30;
+
+    // Nombre de la receta en grande y centrado
+    doc.setFontSize(25);  
+    doc.setTextColor(50, 50, 150);  // Azul oscuro profesional
+    doc.text(recipe.name, doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
+    yOffset += 20;
+
+    // Sección de ingredientes (alineado a la izquierda)
+    doc.setFontSize(20);  // Fuente más grande para los subtítulos
+    doc.setTextColor(0, 0, 0);  // Texto negro
+    doc.text("Ingredientes:", 20, yOffset);  // Alineado a la izquierda con posición X = 20
+    yOffset += 10;
+
+    doc.setFontSize(14);  // Fuente mediana para el contenido
+    const ingredientLines = doc.splitTextToSize(recipe.ingredients, 170);  // Mantener bien el ancho del texto
+    ingredientLines.forEach(line => {
+        doc.text(line, 20, yOffset);  // Alineado a la izquierda con posición X = 20
+        yOffset += 8;
+    });
+
+    yOffset += 20;  // Separación entre secciones
+
+    // Sección de instrucciones (alineado a la izquierda)
+    doc.setFontSize(20);
+    doc.text("Instrucciones:", 20, yOffset);  // Alineado a la izquierda con posición X = 20
+    yOffset += 10;
+
+    doc.setFontSize(14);
+    const instructionLines = doc.splitTextToSize(recipe.instructions, 170);
+    instructionLines.forEach(line => {
+        doc.text(line, 20, yOffset);  // Alineado a la izquierda con posición X = 20
+        yOffset += 8;
+    });
+
+    addPageNumber();
+});
+    doc.save("mi_libro_de_recetas_profesional.pdf");
+});
+
 </script>
 </body></html>
