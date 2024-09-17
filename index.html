@@ -1,151 +1,171 @@
-<html><head><base href="https://party.websim.ai/">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generador de eBook de Recetas con Acordeón</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f7f3e9;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-    }
-    .container {
-        background-color: #ffffff;
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        max-width: 800px;
-        width: 100%;
-    }
-    h1 {
-        color: #4a4a4a;
-        text-align: center;
-        font-size: 2.5em;
-        margin-bottom: 30px;
-    }
-    .recipe-form {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    label {
-        font-weight: bold;
-        color: #666;
-    }
-    input[type="text"], textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 1em;
-    }
-    textarea {
-        height: 100px;
-        resize: vertical;
-    }
-    button {
-        background-color: #ff6b6b;
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        font-size: 1.2em;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    button:hover {
-        background-color: #e74c3c;
-    }
-    #recipeList {
-        margin-top: 30px;
-    }
-    .recipe-item {
-        background-color: #f9f9f9;
-        border: 1px solid #eee;
-        border-radius: 5px;
-        margin-bottom: 15px;
-        overflow: hidden;
-    }
-    .recipe-header {
-        background-color: #ff6b6b;
-        color: white;
-        padding: 15px;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .recipe-header h3 {
-        margin: 0;
-    }
-    .recipe-content {
-        padding: 0 15px;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease-out;
-    }
-    .recipe-content.active {
-        max-height: 1000px;
-        padding: 15px;
-        transition: max-height 0.5s ease-in;
-    }
-    .toggle-icon {
-        transition: transform 0.3s ease;
-    }
-    .toggle-icon.active {
-        transform: rotate(180deg);
-    }
-</style>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de eBook de Recetas con Acordeón</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f3e9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #4a4a4a;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
+        .recipe-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e74c3c;
+        }
+
+        #recipeList {
+            margin-top: 30px;
+        }
+
+        .recipe-item {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .recipe-header {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recipe-header h3 {
+            margin: 0;
+        }
+
+        .recipe-content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .recipe-content.active {
+            max-height: 1000px;
+            padding: 15px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-icon.active {
+            transform: rotate(180deg);
+        }
+    </style>
 </head>
+
 <body>
-<div class="container">
-    <h1>🍳 Generador de eBook de Recetas 📚</h1>
-    <form id="recipeForm" class="recipe-form">
-        <div>
-            <label for="recipeName">Nombre de la Receta:</label>
-            <input type="text" id="recipeName" required>
-        </div>
-        <div>
-            <label for="ingredients">Ingredientes:</label>
-            <textarea id="ingredients" required></textarea>
-        </div>
-        <div>
-            <label for="instructions">Instrucciones:</label>
-            <textarea id="instructions" required></textarea>
-        </div>
-        <button type="submit">Agregar Receta</button>
-    </form>
-    <div id="recipeList"></div>
-    <button id="generateEbook" style="margin-top: 20px;">Generar eBook PDF</button>
-</div>
+    <div class="container">
+        <h1>🍳 Generador de eBook de Recetas 📚</h1>
+        <form id="recipeForm" class="recipe-form">
+            <div>
+                <label for="recipeName">Nombre de la Receta:</label>
+                <input type="text" id="recipeName" required>
+            </div>
+            <div>
+                <label for="ingredients">Ingredientes:</label>
+                <textarea id="ingredients" required></textarea>
+            </div>
+            <div>
+                <label for="instructions">Instrucciones:</label>
+                <textarea id="instructions" required></textarea>
+            </div>
+            <button type="submit">Agregar Receta</button>
+        </form>
+        <div id="recipeList"></div>
+        <button id="generateEbook" style="margin-top: 20px;">Generar eBook PDF</button>
+    </div>
 
-<script>
-    const { jsPDF } = window.jspdf;
-    let recipes = [];
+    <script>
+        const { jsPDF } = window.jspdf;
+        let recipes = [];
 
-    document.getElementById('recipeForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const name = document.getElementById('recipeName').value;
-        const ingredients = document.getElementById('ingredients').value;
-        const instructions = document.getElementById('instructions').value;
-        
-        recipes.push({ name, ingredients, instructions });
-        updateRecipeList();
-        this.reset();
-    });
+        document.getElementById('recipeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const name = document.getElementById('recipeName').value;
+            const ingredients = document.getElementById('ingredients').value;
+            const instructions = document.getElementById('instructions').value;
 
-    function updateRecipeList() {
-        const list = document.getElementById('recipeList');
-        list.innerHTML = '';
-        recipes.forEach((recipe, index) => {
-            const item = document.createElement('div');
-            item.classList.add('recipe-item');
-            item.innerHTML = `
+            recipes.push({ name, ingredients, instructions });
+            updateRecipeList();
+            this.reset();
+        });
+
+        function updateRecipeList() {
+            const list = document.getElementById('recipeList');
+            list.innerHTML = '';
+            recipes.forEach((recipe, index) => {
+                const item = document.createElement('div');
+                item.classList.add('recipe-item');
+                item.innerHTML = `
                 <div class="recipe-header">
                     <h3>${recipe.name}</h3>
                     <span class="toggle-icon">▼</span>
@@ -155,120 +175,137 @@
                     <p><strong>Instrucciones:</strong> ${recipe.instructions}</p>
                 </div>
             `;
-            list.appendChild(item);
+                list.appendChild(item);
 
-            const header = item.querySelector('.recipe-header');
-            const content = item.querySelector('.recipe-content');
-            const toggleIcon = item.querySelector('.toggle-icon');
+                const header = item.querySelector('.recipe-header');
+                const content = item.querySelector('.recipe-content');
+                const toggleIcon = item.querySelector('.toggle-icon');
 
-            header.addEventListener('click', () => {
-                content.classList.toggle('active');
-                toggleIcon.classList.toggle('active');
+                header.addEventListener('click', () => {
+                    content.classList.toggle('active');
+                    toggleIcon.classList.toggle('active');
+                });
             });
-        });
-    }
+        }
 
-    document.getElementById('generateEbook').addEventListener('click', function() {
-    const doc = new jsPDF();
-    let pageNumber = 1;
+        document.getElementById('generateEbook').addEventListener('click', function () {
+            const doc = new jsPDF();
+            let pageNumber = 1;
 
-    function addPageNumber() {
-        doc.setFontSize(10);
-        doc.text('Página ' + pageNumber, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, { align: 'center' });
-        pageNumber++;
-    }
+            function addPageNumber() {
+                doc.setFontSize(10);
+                doc.text('Página ' + pageNumber, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, { align: 'center' });
+                pageNumber++;
+            }
 
-    function addHeader(text) {
-        doc.setFontSize(12);
-        doc.setTextColor(100, 100, 100);
-        doc.text(text, doc.internal.pageSize.width / 2, 10, { align: 'center' });
-    }
+            function addHeader(text) {
+                doc.setFontSize(12);
+                doc.setTextColor(100, 100, 100);
+                doc.text(text, doc.internal.pageSize.width / 2, 10, { align: 'center' });
+            }
 
-    // Portada mejorada
-    doc.setFillColor(50, 50, 150);  // Color azul oscuro profesional
-    doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
-    doc.setTextColor(255, 255, 255);  // Texto blanco
-    doc.setFontSize(50);  // Título más grande
-    doc.text("Libro de Recetas", doc.internal.pageSize.width / 2, 100, { align: 'center' });
-    doc.setFontSize(25);  // Subtítulo más claro
-    doc.text("Hecho con amor y cuidado", doc.internal.pageSize.width / 2, 130, { align: 'center' });
-    doc.text(new Date().toLocaleDateString(), doc.internal.pageSize.width / 2, 160, { align: 'center' });
+            // Portada
+            doc.setFillColor(255, 107, 107);
+            doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
+            doc.setTextColor(255, 255, 255);
 
-    // Índice
-    doc.addPage();
-    addHeader('Índice - Libro de Recetas');
-    doc.setTextColor(0, 0, 0);  // Negro para el índice
-    doc.setFontSize(24);  // Fuente grande para el título del índice
-    doc.text("Índice", doc.internal.pageSize.width / 2, 30, { align: 'center' });
-    let yOffset = 50;
-    recipes.forEach((recipe, index) => {
-        doc.setFontSize(14);  // Fuente más grande para el listado de recetas
-        doc.text(`${index + 1}. ${recipe.name}`, 20, yOffset);
-        yOffset += 10;
-        if (yOffset > 280) {
+            // Ajustar el texto del título en la portada
+            const titleWidth = 170; // Ancho máximo para el texto del título
+            doc.setFontSize(40);
+            const titleLines = doc.splitTextToSize("Recetas Saludables para Diabéticos", titleWidth);
+            titleLines.forEach((line, index) => {
+                doc.text(line, doc.internal.pageSize.width / 2, 100 + (index * 17), { align: 'center' });
+            });
+
+
+
+            // Ajustar el texto del subtítulo con un ancho específico
+            const subtitleWidth = 170; // Ancho máximo para el texto del subtítulo
+            doc.setFontSize(20);
+            const subtitleLines = doc.splitTextToSize("Guía Completa para Comer Bien y Mantener el Control de la Glucosa", subtitleWidth);
+            subtitleLines.forEach((line, index) => {
+                doc.text(line, doc.internal.pageSize.width / 2, 140 + (index * 8), { align: 'center' });
+            });
+
+
+
+            // Índice
             doc.addPage();
             addHeader('Índice - Libro de Recetas');
+            doc.setTextColor(0, 0, 0);  // Negro para el índice
+            doc.setFontSize(24);  // Fuente grande para el título del índice
+            doc.text("Índice", doc.internal.pageSize.width / 2, 30, { align: 'center' });
+            let yOffset = 50;
+            recipes.forEach((recipe, index) => {
+                doc.setFontSize(14);  // Fuente más grande para el listado de recetas
+                doc.text(`${index + 1}. ${recipe.name}`, 20, yOffset);
+                yOffset += 10;
+                if (yOffset > 280) {
+                    doc.addPage();
+                    addHeader('Índice - Libro de Recetas');
+                    addPageNumber();
+                    yOffset = 30;
+                }
+            });
             addPageNumber();
-            yOffset = 30;
-        }
-    });
-    addPageNumber();
 
-// Recetas
-recipes.forEach((recipe, index) => {
-    doc.addPage();
-    addHeader('Libro de Recetas');
-    let yOffset = 30;
+            // Recetas
+            recipes.forEach((recipe, index) => {
+                doc.addPage();
+                addHeader('Libro de Recetas');
+                let yOffset = 30;
 
-    // Nombre de la receta en grande y centrado con ajuste de ancho
-    doc.setFontSize(25);  
-    doc.setTextColor(50, 50, 150);  // Azul oscuro profesional
-    const recipeNameLines = doc.splitTextToSize(recipe.name, 170);
-    recipeNameLines.forEach(line => {
-        doc.text(line, doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
-        yOffset += 10;  // Ajustar el espaciado entre las líneas del título si es necesario
-    });
-    yOffset += 20;  // Espacio reducido después del nombre de la receta
+                // Nombre de la receta en grande y centrado con ajuste de ancho
+                doc.setFontSize(25);
+                doc.setTextColor(50, 50, 150);  // Azul oscuro profesional
+                const recipeNameLines = doc.splitTextToSize(recipe.name, 170);
+                recipeNameLines.forEach(line => {
+                    doc.text(line, doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
+                    yOffset += 10;  // Ajustar el espaciado entre las líneas del título si es necesario
+                });
+                yOffset += 20;  // Espacio reducido después del nombre de la receta
 
-    // Sección de ingredientes (negrita para el título)
-    doc.setFontSize(20);  
-    doc.setTextColor(0, 0, 0);  // Texto negro
-    doc.setFont("helvetica", "bold");  // Fuente en negrita
-    doc.text("Ingredientes:", 20, yOffset);  // Alineado a la izquierda con posición X = 20
-    yOffset += 8;  // Menor separación después del título
+                // Sección de ingredientes (negrita para el título)
+                doc.setFontSize(20);
+                doc.setTextColor(0, 0, 0);  // Texto negro
+                doc.setFont("helvetica", "bold");  // Fuente en negrita
+                doc.text("Ingredientes:", 20, yOffset);  // Alineado a la izquierda con posición X = 20
+                yOffset += 8;  // Menor separación después del título
 
-    doc.setFontSize(14);  // Tamaño de fuente para el contenido
-    doc.setFont("helvetica", "normal");  // Fuente normal
-    const ingredientLines = doc.splitTextToSize(recipe.ingredients, 170);
-    ingredientLines.forEach(line => {
-        doc.text(line, 20, yOffset);  // Alineado a la izquierda con posición X = 20
-        yOffset += 5;  // Menor espaciado entre líneas de ingredientes
-    });
+                doc.setFontSize(14);  // Tamaño de fuente para el contenido
+                doc.setFont("helvetica", "normal");  // Fuente normal
+                const ingredientLines = doc.splitTextToSize(recipe.ingredients, 170);
+                ingredientLines.forEach(line => {
+                    doc.text(line, 20, yOffset);  // Alineado a la izquierda con posición X = 20
+                    yOffset += 5;  // Menor espaciado entre líneas de ingredientes
+                });
 
-    yOffset += 15;  // Separación reducida entre secciones
+                yOffset += 15;  // Separación reducida entre secciones
 
-    // Sección de instrucciones (negrita para el título)
-    doc.setFontSize(20);  
-    doc.setTextColor(0, 0, 0);  // Texto negro
-    doc.setFont("helvetica", "bold");  // Fuente en negrita
-    doc.text("Instrucciones:", 20, yOffset);  // Alineado a la izquierda con posición X = 20
-    yOffset += 8;  // Menor separación después del título
+                // Sección de instrucciones (negrita para el título)
+                doc.setFontSize(20);
+                doc.setTextColor(0, 0, 0);  // Texto negro
+                doc.setFont("helvetica", "bold");  // Fuente en negrita
+                doc.text("Instrucciones:", 20, yOffset);  // Alineado a la izquierda con posición X = 20
+                yOffset += 8;  // Menor separación después del título
 
-    doc.setFontSize(14);  // Tamaño de fuente para el contenido
-    doc.setFont("helvetica", "normal");  // Fuente normal
-    const instructionLines = doc.splitTextToSize(recipe.instructions, 170);
-    instructionLines.forEach(line => {
-        doc.text(line, 20, yOffset);  // Alineado a la izquierda con posición X = 20
-        yOffset += 5;  // Menor espaciado entre líneas de instrucciones
-    });
+                doc.setFontSize(14);  // Tamaño de fuente para el contenido
+                doc.setFont("helvetica", "normal");  // Fuente normal
+                const instructionLines = doc.splitTextToSize(recipe.instructions, 170);
+                instructionLines.forEach(line => {
+                    doc.text(line, 20, yOffset);  // Alineado a la izquierda con posición X = 20
+                    yOffset += 5;  // Menor espaciado entre líneas de instrucciones
+                });
 
-    addPageNumber();
-});
+                addPageNumber();
+            });
 
 
 
-    doc.save("mi_libro_de_recetas_profesional.pdf");
-});
+            doc.save("mi_libro_de_recetas_profesional.pdf");
+        });
 
-</script>
-</body></html>
+    </script>
+</body>
+
+</html>
