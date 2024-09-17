@@ -220,41 +220,53 @@ recipes.forEach((recipe, index) => {
     addHeader('Libro de Recetas');
     let yOffset = 30;
 
-    // Nombre de la receta en grande y centrado
+    // Nombre de la receta en grande y centrado con ajuste de ancho
     doc.setFontSize(25);  
     doc.setTextColor(50, 50, 150);  // Azul oscuro profesional
-    doc.text(recipe.name, doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
-    yOffset += 20;
+    const recipeNameLines = doc.splitTextToSize(recipe.name, 170);
+    recipeNameLines.forEach(line => {
+        doc.text(line, doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
+        yOffset += 10;  // Ajustar el espaciado entre las líneas del título si es necesario
+    });
+    yOffset += 20;  // Espacio reducido después del nombre de la receta
 
-    // Sección de ingredientes (alineado a la izquierda)
-    doc.setFontSize(20);  // Fuente más grande para los subtítulos
+    // Sección de ingredientes (negrita para el título)
+    doc.setFontSize(20);  
     doc.setTextColor(0, 0, 0);  // Texto negro
+    doc.setFont("helvetica", "bold");  // Fuente en negrita
     doc.text("Ingredientes:", 20, yOffset);  // Alineado a la izquierda con posición X = 20
-    yOffset += 10;
+    yOffset += 8;  // Menor separación después del título
 
-    doc.setFontSize(14);  // Fuente mediana para el contenido
-    const ingredientLines = doc.splitTextToSize(recipe.ingredients, 170);  // Mantener bien el ancho del texto
+    doc.setFontSize(14);  // Tamaño de fuente para el contenido
+    doc.setFont("helvetica", "normal");  // Fuente normal
+    const ingredientLines = doc.splitTextToSize(recipe.ingredients, 170);
     ingredientLines.forEach(line => {
         doc.text(line, 20, yOffset);  // Alineado a la izquierda con posición X = 20
-        yOffset += 8;
+        yOffset += 5;  // Menor espaciado entre líneas de ingredientes
     });
 
-    yOffset += 20;  // Separación entre secciones
+    yOffset += 10;  // Separación reducida entre secciones
 
-    // Sección de instrucciones (alineado a la izquierda)
-    doc.setFontSize(20);
+    // Sección de instrucciones (negrita para el título)
+    doc.setFontSize(20);  
+    doc.setTextColor(0, 0, 0);  // Texto negro
+    doc.setFont("helvetica", "bold");  // Fuente en negrita
     doc.text("Instrucciones:", 20, yOffset);  // Alineado a la izquierda con posición X = 20
-    yOffset += 10;
+    yOffset += 8;  // Menor separación después del título
 
-    doc.setFontSize(14);
+    doc.setFontSize(14);  // Tamaño de fuente para el contenido
+    doc.setFont("helvetica", "normal");  // Fuente normal
     const instructionLines = doc.splitTextToSize(recipe.instructions, 170);
     instructionLines.forEach(line => {
         doc.text(line, 20, yOffset);  // Alineado a la izquierda con posición X = 20
-        yOffset += 8;
+        yOffset += 5;  // Menor espaciado entre líneas de instrucciones
     });
 
     addPageNumber();
 });
+
+
+
     doc.save("mi_libro_de_recetas_profesional.pdf");
 });
 
