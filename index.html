@@ -222,7 +222,7 @@
             // Ajustar el texto del subtítulo con un ancho específico
             const subtitleWidth = 170; // Ancho máximo para el texto del subtítulo
             doc.setFontSize(20);
-            const subtitleLines = doc.splitTextToSize("Guía Completa para Comer Bien y Mantener el Control de la Glucosa", subtitleWidth);
+            const subtitleLines = doc.splitTextToSize("Bienvenido a tu guía esencial para una alimentación equilibrada y deliciosa, diseñada específicamente para quienes buscan controlar su diabetes de manera efectiva. En este ebook encontrarás 50 recetas cuidadosamente seleccionadas, divididas en cinco categorías: Desayunos, Almuerzos, Meriendas, Cenas y Postres. Cada receta está elaborada para ofrecer opciones nutritivas que mantienen la estabilidad de los niveles de glucosa en sangre, sin sacrificar el sabor ni la satisfacción", subtitleWidth);
             subtitleLines.forEach((line, index) => {
                 doc.text(line, doc.internal.pageSize.width / 2, 140 + (index * 8), { align: 'center' });
             });
